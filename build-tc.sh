@@ -42,7 +42,7 @@ tg_post_build() {
 }
 
 # Build Info
-date="$(date)" # ISO 8601 format
+date="$(date)"
 rel_friendly_date="$(date "+%B %-d, %Y")" # "Month day, year" format
 builder_commit="$(git rev-parse HEAD)"
 
@@ -54,9 +54,9 @@ msg "$LLVM_NAME: Building LLVM..."
 tg_post_msg "<b>$LLVM_NAME: Building LLVM. . .</b>"
 ./build-llvm.py \
 	--clang-vendor "$LLVM_NAME" \
-	--projects "clang;lld;polly" \
-#	--targets "ARM;AArch64" \
-    --targets "x86_64" \
+	--projects "clang;lld" \
+	--targets X86 \
+	--branch "release/14.x"
 	--shallow-clone \
 	--incremental \
 	--build-type "Release" 2>&1 | tee build.log
@@ -71,7 +71,8 @@ tg_post_msg "<b>$LLVM_NAME: Building LLVM. . .</b>"
 # Build binutils
 msg "$LLVM_NAME: Building binutils..."
 tg_post_msg "<b>$LLVM_NAME: Building Binutils. . .</b>"
-./build-binutils.py --targets arm aarch64
+./build-binutils.py \
+	--targets x86_64
 
 # Remove unused products
 rm -fr install/include
