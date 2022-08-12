@@ -56,7 +56,7 @@ tg_post_msg "<b>$LLVM_NAME: Building LLVM. . .</b>"
 	--clang-vendor "$LLVM_NAME" \
 	--projects "clang;lld" \
 	--targets X86 \
-	--branch "release/14.x"
+	--branch "release/15.x"
 	--shallow-clone \
 	--incremental \
 	--build-type "Release" 2>&1 | tee build.log
