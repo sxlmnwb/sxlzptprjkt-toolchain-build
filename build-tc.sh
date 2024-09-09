@@ -1,3 +1,5 @@
+#!/bin/bash
+
 #
 # // Copyright (C) 2021 Jody Yuantoro (xyzuan) Aarch64
 # // Copyright (C) 2022 Salman Wahib (sxlmnwb) x86_64
@@ -52,7 +54,7 @@ tg_post_msg "<b>$LLVM_NAME: Toolchain Compilation Started</b>%0A<b>Date : </b><c
 # Build LLVM
 msg "$LLVM_NAME: Building LLVM..."
 tg_post_msg "<b>$LLVM_NAME: Building LLVM. . .</b>"
-./build-llvm.py \
+python3 build-llvm.py \
 	--clang-vendor "$LLVM_NAME" \
 	--projects "clang;lld;polly" \
 	--targets "ARM;AArch64" \
@@ -80,16 +82,16 @@ rm -f install/lib/*.a install/lib/*.la
 
 # Strip remaining products
 for f in $(find install -type f -exec file {} \; | grep 'not stripped' | awk '{print $1}'); do
-	strip -s "${f: : -1}"
+    strip -s "${f: -1}"
 done
 
 # Set executable rpaths so setting LD_LIBRARY_PATH isn't necessary
 for bin in $(find install -mindepth 2 -maxdepth 3 -type f -exec file {} \; | grep 'ELF .* interpreter' | awk '{print $1}'); do
-	# Remove last character from file output (':')
-	bin="${bin: : -1}"
+    # Remove last character from file output (':')
+    bin="${bin: -1}"
 
-	echo "$bin"
-	patchelf --set-rpath "$DIR/install/lib" "$bin"
+    echo "$bin"
+    patchelf --set-rpath "$DIR/install/lib" "$bin"
 done
 
 # Release Info

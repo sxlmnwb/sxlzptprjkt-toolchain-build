@@ -464,19 +464,28 @@ def versioned_binaries(binary_name):
     # There might be clang-7 to clang-11
     tot_llvm_ver = 11
     try:
+        # Mengambil data dari CMakeLists.txt LLVM
         response = request.urlopen(
             'https://raw.githubusercontent.com/llvm/llvm-project/main/llvm/CMakeLists.txt'
         )
-        to_parse = None
         data = response.readlines()
+        # Inisialisasi to_parse sebagai None
+        to_parse = None
+        # Loop untuk mencari baris yang berisi "set(LLVM_VERSION_MAJOR"
         for line in data:
             line = line.decode('utf-8').strip()
             if "set(LLVM_VERSION_MAJOR" in line:
                 to_parse = line
                 break
-        tot_llvm_ver = re.search('\d+', to_parse).group(0)
+        # Hanya melakukan pencarian regex jika to_parse adalah string yang valid
+        if to_parse:
+            tot_llvm_ver = re.search(r'\d+', to_parse).group(0)
+        else:
+            print("LLVM_VERSION_MAJOR tidak ditemukan, menggunakan versi default.")
     except URLError:
-        pass
+        print("Tidak bisa mengakses URL, menggunakan versi default.")
+
+    # Mengembalikan daftar versi binary, misal clang-11, clang-10, dst.
     return [
         '%s-%s' % (binary_name, i) for i in range(int(tot_llvm_ver), 6, -1)
     ]
